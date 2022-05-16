@@ -1,0 +1,42 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Update repository
+      apt_repository:
+        repo: 'ppa:git-core/ppa'
+        state: present
+    - name: Install git
+      apt:
+        name: git
+        state: present
+        update_cache: yes
+    - name: Install nginx
+      apt:
+        name: nginx
+        state: latest
+    - name: Create folder
+      file:
+        path: /var/www/html
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+    - name: copy file index.html
+      copy:
+        src: index.html
+        dest: /var/www/html
+        owner: root
+        group: root
+        mode: '0644'
+    - name: copy nginx config file
+      copy:
+        src: nginx.conf
+        dest: /etc/nginx/conf.d/
+        owner: root
+        group: root
+        mode: '0644'
+    - name: start nginx
+      service:
+        name: nginx
+        state: started
